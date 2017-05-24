@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- File appender logback configuration provided for import, equivalent 
+	to the programmatic initialization performed by Boot -->
+
+<included>
+	<appender name="ROLLING-FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}.json</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}.json-%d{yyyy-MM-dd}.gz</fileNamePattern>
+			<maxHistory>3</maxHistory>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>1MB</MaxFileSize>
+		</triggeringPolicy>
+		<!-- <encoder class="net.logstash.logback.encoder.LogstashEncoder"/> -->
+		<encoder
+			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<timestamp>
+					<timeZone>UTC</timeZone>
+				</timestamp>
+
+				
+				<nestedField>
+					<fieldName>@ThreadInfo</fieldName>
+					<providers>
+						<threadName />
+					</providers>
+				</nestedField>
+				<nestedField>
+					<fieldName>@LogInfo</fieldName>
+					<providers>
+						<loggerName />
+						<logLevel />
+						<logLevelValue />
+					</providers>
+				</nestedField>
+				<nestedField>
+					<fieldName>@AppInfo</fieldName>
+					<providers>
+						<context />
+						<version />
+					</providers>
+				</nestedField>
+				<arguments />
+				<message />
+				<pattern>
+					<pattern>
+						{
+						"trace": "%X{X-B3-TraceId:-}",
+						"span":
+						"%X{X-B3-SpanId:-}",
+						"parent": "%X{X-B3-ParentSpanId:-}",
+						"exportable":
+						"%X{X-Span-Export:-}",
+						"pid": "${PID:-}"
+						}
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>
+</included>
